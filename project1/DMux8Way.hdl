@@ -18,11 +18,9 @@ CHIP DMux8Way {
     OUT a, b, c, d, e, f, g, h;
 
     PARTS:
-    //gonna be busses [p..a]?
-
-    
-    DMux4Way(in= in, sel= sel[0..1], a= a1, b= b1, c= c1, d= d1);
-    DMux4Way(in= in, sel= sel[1..2], a= e1, b= f1, c= g1, d= h1);
-    And(a= sel[2], b= sel[2], out= sel2);
-   
+    Not(in= sel[2], out= notsel2);
+    And(a= in, b= notsel2, out= inAndNotSel2);
+    And(a= in, b= sel[2], out= inAndSel2);
+    DMux4Way(in= inAndNotSel2, sel= sel[0..1], a= a, b= b, c= c, d= d);
+    DMux4Way(in= inAndSel2, sel= sel[0..1], a= e, b= f, c= g, d= h);
 }
