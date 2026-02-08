@@ -1,13 +1,13 @@
-#ifndef SYMBOLS_H
+ifndef SYMBOLS_H
 #define SYMBOLS_H
 
 #include <stdbool.h>
 #include <stdint.h>
 
 typedef struct Symbol {
-  char *label;
-  int value;
-  struct Symbol *next;
+    char *label;
+    int value;
+    struct Symbol *next;
 } Symbol;
 
 Symbol *symbol_create(int value, char *label);
