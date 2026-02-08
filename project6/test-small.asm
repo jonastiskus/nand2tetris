@@ -6,12 +6,16 @@ hello
 //comment3
 world
 @a
+@13
+@1
 this
 (LABEL)
 (LABEL)
+@12
 (ANOTHERLABEL)
 is
 test
 (LASTLABEL)
+@50
 (LABEL2)
 text

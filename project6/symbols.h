@@ -1,4 +1,4 @@
-ifndef SYMBOLS_H
+#ifndef SYMBOLS_H
 #define SYMBOLS_H
 
 #include <stdbool.h>

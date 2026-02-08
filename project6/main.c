@@ -24,19 +24,19 @@ int main(int argc, char const *argv[]) {
 
     //print_raw(buff);
 
-    Symbol *head = create_symbol_table();
+    //Symbol *head = create_symbol_table();
     //print_symbols(head);
 
-    printf("-------------------------------\n");
-    read_label_symbols(&head, buff);
-    read_variables(&head, buff);
+    //printf("-------------------------------\n");
+    //read_label_symbols(&head, buff);
+    //read_variables(&head, buff);
     //print_symbols(head);
 
-    printf("-------------------------------\n");
-    parse(buff, head);
+    //printf("-------------------------------\n");
+    parse(buff);
 
     free(buff);
-    free_symbol_table(head);
+    //free_symbol_table(head);
 
     return 0;
 }

@@ -22,6 +22,10 @@ typedef struct {
 {"M-1", "110010"}, {"D+M", "000010"}, {"D-M", "010011"},                 \
 {"M-D", "000111"}, {"D&M", "000000"}, {"D|M", "010101"}
 
+#define DEST_MAP \
+{"A", "100"}, {"M", "001"}, {"D", "010"}, {"MD", "011"}, {"AM", "101"}, \
+{"AD", "110"}, {"AMD", "111"}
+
 extern const Comp comp_0[];
 extern const Comp comp_1[];
 
@@ -29,6 +33,6 @@ bool is_a_ins(char *str);
 bool is_c_ins(char *str);
 bool is_symbol(char *str);
 
-char *parse(char *buff, Symbol *head);
+char *parse(char *buff);
 
 #endif

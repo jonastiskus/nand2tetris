@@ -22,6 +22,15 @@ void print_raw(char *buff) {
     }
 }
 
+char *append_char(char *buff, char c) {
+    size_t len = strlen(buff);
+    char *tmp = realloc(buff, len + 2);
+    tmp[len] = c;
+    tmp[len+1] = '\0';
+
+    return tmp;
+}
+
 char *append_string(char *buff, char *str) {
     char *tmp = realloc(buff, strlen(buff) + strlen(str) + 1);
     strcat(tmp, str);

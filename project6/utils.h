@@ -10,6 +10,7 @@
 void print_raw(char *buff);
 void remove_comments(char *buff);
 
+char *append_char(char *buff, char c);
 char *append_string(char *buff, char *str);
 
 bool is_new_line(char c);

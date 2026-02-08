@@ -11,6 +11,7 @@
 	M=D
 
 	@KBD // key <= 0
+    @2 //test comment here
 	D=M
 	@OFF
 	D;JLE
@@ -31,6 +32,7 @@
 
 	@i // i++
 	M=M+1
+    @6
 	@OFF
 	0;JMP
 
