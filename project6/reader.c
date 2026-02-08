@@ -1,4 +1,5 @@
 #include "reader.h"
+#include <ctype.h>
 
 char *read_file(FILE *file) {
   char line_buff[2];
@@ -18,21 +19,16 @@ void read_label_symbols(Symbol **head, char *buff) {
   char *label = malloc(1);
   label[0] = '\0';
 
-  if (!label) {
-    printf("Error allocating memory");
-    exit(1);
-  }
-
   while (*buff != '\0') {
     if (is_new_line(*buff))
       value++;
 
-    if (!take && is_symbol_begin(*buff)) {
+    if (!take && is_label_begin(*buff)) {
       take = true;
       buff++;
     }
 
-    if (take && (is_symbol_end(*buff))) {
+    if (take && (is_label_end(*buff))) {
       take = false;
       Symbol *symbol = symbol_create(value, label);
       bool exists = symbol_exists(*head, symbol);
@@ -63,9 +59,8 @@ void read_variables(Symbol **head, char *buff) {
   var[0] = '\0';
 
   while (*buff != '\0') {
-    if (!take && is_variable_begin(*buff)) {
+    if (!take && is_variable_begin(*buff) && !isdigit(*(++buff))) {
       take = true;
-      buff++;
     }
     if (take && is_variable_end(*buff)) {
       take = false;

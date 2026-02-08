@@ -13,8 +13,8 @@ void remove_comments(char *buff);
 char *append_string(char *buff, char *str);
 
 bool is_new_line(char c);
-bool is_symbol_begin(char c);
-bool is_symbol_end(char c);
+bool is_label_begin(char c);
+bool is_label_end(char c);
 bool is_variable_begin(char c);
 bool is_variable_end(char c);
 

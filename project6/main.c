@@ -4,6 +4,8 @@
 #include <string.h>
 #include "symbols.h"
 #include "reader.h"
+#include "utils.h"
+#include "parser.h"
 
 int main(int argc, char const *argv[]) {
   FILE *file;
@@ -19,7 +21,8 @@ int main(int argc, char const *argv[]) {
   print_raw(buff);
   printf("-------------------------------\n");
   remove_comments(buff);
-  print_raw(buff);
+
+  //print_raw(buff);
 
   Symbol *head = create_symbol_table();
   //print_symbols(head);
@@ -27,7 +30,10 @@ int main(int argc, char const *argv[]) {
   printf("-------------------------------\n");
   read_label_symbols(&head, buff);
   read_variables(&head, buff);
-  print_symbols(head);
+  //print_symbols(head);
+
+  printf("-------------------------------\n");
+  parse(buff, head);
 
   free(buff);
   free_symbol_table(head);

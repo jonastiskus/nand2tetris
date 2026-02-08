@@ -1,4 +1,7 @@
 #include "utils.h"
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
 
 void print_raw(char *buff) {
   int len = strlen(buff) + 1;
@@ -50,9 +53,9 @@ void remove_comments(char *buff) {
 
 bool is_new_line(char c) { return c == '\n'; }
 
-bool is_symbol_begin(char c) { return c == '('; }
+bool is_label_begin(char c) { return c == '('; }
 
-bool is_symbol_end(char c) { return c == ')'; }
+bool is_label_end(char c) { return c == ')'; }
 
 bool is_variable_begin(char c) { return c == '@'; }
 
