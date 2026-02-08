@@ -1,0 +1,17 @@
+//comment
+(LOOP)
+@bibi
+hello
+//comment
+//comment3
+world
+@a
+this
+(LABEL)
+(LABEL)
+(ANOTHERLABEL)
+is
+test
+(LASTLABEL)
+(LABEL2)
+text
