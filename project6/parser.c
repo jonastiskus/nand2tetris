@@ -2,9 +2,9 @@
 #include "utils.h"
 #include <ctype.h>
 
-const Comp comp_0[] = {COMP_0_INS_MAP};
-const Comp comp_1[] = {COMP_1_INS_MAP};
-const Comp dest[] = {DEST_MAP};
+const Ins comp_0[] = {COMP_0_INS_MAP};
+const Ins comp_1[] = {COMP_1_INS_MAP};
+const Ins dest[] = {DEST_MAP};
 
 bool is_a_ins(char *str) { return is_variable_begin(str[0]); }
 
@@ -65,9 +65,9 @@ void parse_variable(char *buff, char **parse) {
     free(var);
 }
 
-Comp *find_comp_0_by_name(char *name) {
-    Comp *c = malloc(sizeof(Comp));
-    size_t comp_len = sizeof(comp_0) / sizeof(Comp);
+Ins *find_comp_0_by_name(char *name) {
+    Ins *c = malloc(sizeof(Ins));
+    size_t comp_len = sizeof(comp_0) / sizeof(Ins);
     for(int i = 0; i < comp_len; i++) {
         c = &comp_0[i];
         if(strcmp(name, c->name) == 0) {
@@ -78,9 +78,9 @@ Comp *find_comp_0_by_name(char *name) {
     return NULL;
 }
 
-Comp *find_comp_1_by_name(char *name) {
-    Comp *c = malloc(sizeof(Comp));
-    size_t comp_len = sizeof(comp_1) / sizeof(Comp);
+Ins *find_comp_1_by_name(char *name) {
+    Ins *c = malloc(sizeof(Ins));
+    size_t comp_len = sizeof(comp_1) / sizeof(Ins);
     for(int i = 0; i < comp_len; i++) {
         c = &comp_1[i];
         if(strcmp(name, c->name) == 0) {
@@ -91,9 +91,9 @@ Comp *find_comp_1_by_name(char *name) {
     return NULL;
 }
 
-Comp *find_dest_by_name(char *name) {
-    Comp *c = malloc(sizeof(Comp));
-    size_t dest_len = sizeof(dest) / sizeof(Comp);
+Ins *find_dest_by_name(char *name) {
+    Ins *c = malloc(sizeof(Ins));
+    size_t dest_len = sizeof(dest) / sizeof(Ins);
     for(int i = 0; i < dest_len; i++) {
         c = &dest[i];
         if(strcmp(name, c->name) == 0) {
@@ -133,7 +133,7 @@ void parse_c_ins(char *buff, char **parse) {
 
     // append comp
     bool is_a = false;
-    Comp *c = find_comp_0_by_name(comp);
+    Ins *c = find_comp_0_by_name(comp);
     if(c == NULL) {
         c = find_comp_1_by_name(comp);
         if(c != NULL) {
@@ -144,7 +144,7 @@ void parse_c_ins(char *buff, char **parse) {
     *parse = append_string(*parse, c->bin_value);
 
     // append dest 
-    Comp *d = find_dest_by_name(dest);
+    Ins *d = find_dest_by_name(dest);
     *parse = append_string(*parse, d->bin_value);
     *parse = append_char(*parse, '\n');
 
