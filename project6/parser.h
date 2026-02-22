@@ -23,8 +23,8 @@ typedef struct {
 {"M-D", "000111"}, {"D&M", "000000"}, {"D|M", "010101"}
 
 #define DEST_MAP                                                         \
-{"A", "100"}, {"M", "001"}, {"D", "010"}, {"MD", "011"}, {"AM", "101"},  \
-{"AD", "110"}, {"AMD", "111"}
+{"null", "000"}, {"A", "100"}, {"M", "001"}, {"D", "010"}, {"MD", "011"},\
+{"AM", "101"}, {"AD", "110"}, {"AMD", "111"}
 
 #define JMP_MAP                                                          \
 {"null", "000"}, {"JGT", "001"}, {"JEQ", "010"}, {"JGE", "011"},         \
@@ -32,6 +32,8 @@ typedef struct {
 
 extern const Ins comp_0[];
 extern const Ins comp_1[];
+extern const Ins dest[];
+extern const Ins jmp[];
 
 bool is_a_ins(char *str);
 bool is_c_ins(char *str);

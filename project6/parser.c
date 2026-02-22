@@ -5,6 +5,7 @@
 const Ins comp_0[] = {COMP_0_INS_MAP};
 const Ins comp_1[] = {COMP_1_INS_MAP};
 const Ins dest[] = {DEST_MAP};
+const Ins jmp[] = {JMP_MAP};
 
 bool is_a_ins(char *str) { return is_variable_begin(str[0]); }
 
@@ -14,7 +15,7 @@ bool is_c_ins(char *str) {
 
 bool is_symbol(char *str) { return is_a_ins(str) && !isdigit(*(++str)); }
 
-void skip_comment(char **buff) {
+void skip_line(char **buff) {
     char *tmp = *buff;
     while(*tmp != '\n') {
         tmp++;
@@ -43,14 +44,15 @@ char *str_to_16_bits(char *str) {
     return bits;
 }
 
-void parse_variable(char *buff, char **parse) {
-    buff++; //skip @
+void parse_variable(char **buff, char **parse) {
+    char *tmp = *buff;
+    tmp++; //skip @
     char *var = malloc(sizeof(char));
     var[0] = '\0';
 
-    while(*buff != '\n') {
-        var = append_char(var, *buff);
-        buff++;
+    while(*tmp != '\n') {
+        var = append_char(var, *tmp);
+        tmp++;
     }
 
     if (isdigit(var[0])) {
@@ -62,16 +64,15 @@ void parse_variable(char *buff, char **parse) {
         //TODO lookup in symbols and take that value
     }
 
+    *buff = tmp;
     free(var);
 }
 
 Ins *find_comp_0_by_name(char *name) {
-    Ins *c = malloc(sizeof(Ins));
     size_t comp_len = sizeof(comp_0) / sizeof(Ins);
     for(int i = 0; i < comp_len; i++) {
-        c = &comp_0[i];
-        if(strcmp(name, c->name) == 0) {
-            return c;
+        if(strcmp(name, comp_0[i].name) == 0) {
+            return &comp_0[i];
         }
     }
 
@@ -79,12 +80,10 @@ Ins *find_comp_0_by_name(char *name) {
 }
 
 Ins *find_comp_1_by_name(char *name) {
-    Ins *c = malloc(sizeof(Ins));
     size_t comp_len = sizeof(comp_1) / sizeof(Ins);
     for(int i = 0; i < comp_len; i++) {
-        c = &comp_1[i];
-        if(strcmp(name, c->name) == 0) {
-            return c;
+        if(strcmp(name, comp_1[i].name) == 0) {
+            return &comp_1[i];
         }
     }
 
@@ -92,45 +91,86 @@ Ins *find_comp_1_by_name(char *name) {
 }
 
 Ins *find_dest_by_name(char *name) {
-    Ins *c = malloc(sizeof(Ins));
     size_t dest_len = sizeof(dest) / sizeof(Ins);
     for(int i = 0; i < dest_len; i++) {
-        c = &dest[i];
-        if(strcmp(name, c->name) == 0) {
-            return c;
+        if(strcmp(name, dest[i].name) == 0) {
+            return &dest[i];
         }
     }
 
     return NULL;
 }
 
-void parse_c_ins(char *buff, char **parse) {
+Ins *find_jmp_by_name(char *name) {
+    size_t jmp_len = sizeof(jmp) / sizeof(Ins);
+    for(int i = 0; i < jmp_len; i++) {
+        if(strcmp(name, jmp[i].name) == 0) {
+            return &jmp[i];
+        }
+    }
+
+    return NULL;
+}
+
+void parse_c_ins(char **buff, char **parse) {
+    *parse = append_string(*parse, "111");
+
+    char *tmp = *buff;
     char *dest = malloc(sizeof(char));
     dest[0] = '\0';
     char *comp = malloc(sizeof(char));
     comp[0] = '\0';
+    char *jmp = malloc(sizeof(char));
+    jmp[0] = '\0';
+    char *line = malloc(sizeof(char));
+    line[0] = '\0';
 
-    *parse = append_string(*parse, "111");
-
-    // rewind pointer to dest start
-    while(!isspace(*buff)){
-        buff--;
-    }
-    buff++;
-
-    while(*buff != '=') {
-        dest = append_char(dest, *buff);   
-        buff++;
+    while(*tmp != '\n') {
+        line = append_char(line, *tmp);
+        tmp++;
     }
 
-    buff++;
-    while(*buff != '\n') {
-        if(!isspace(*buff)) {
-            comp = append_char(comp, *buff);
+    bool has_dest = strstr(line, "=") != NULL;
+    bool has_jmp = strstr(line, ";") != NULL;
+
+    tmp = *buff;
+    if(has_dest) {
+        while(*tmp != '=') {
+            if(!isspace(*tmp)) {
+                dest = append_char(dest, *tmp);   
+            }
+            tmp++;
         }
-        buff++;
+        tmp++;
+    } else {
+        dest = append_string(dest, "null");
     }
 
+    if(has_jmp) {
+        while(*tmp != ';') {
+            if(!isspace(*tmp)) {
+                comp = append_char(comp, *tmp);
+            }
+            tmp++;
+        }
+        tmp++;
+
+        while(*tmp != '\n') {
+            if(!isspace(*tmp)) {
+                jmp = append_char(jmp, *tmp);
+            }
+            tmp++;
+        }
+    } else {
+        while(*tmp != '\n') {
+            if(!isspace(*tmp)) {
+                comp = append_char(comp, *tmp);
+            }
+            tmp++;
+        }
+        jmp = append_string(jmp, "null");
+    }
+   
     // append comp
     bool is_a = false;
     Ins *c = find_comp_0_by_name(comp);
@@ -146,13 +186,18 @@ void parse_c_ins(char *buff, char **parse) {
     // append dest 
     Ins *d = find_dest_by_name(dest);
     *parse = append_string(*parse, d->bin_value);
-    *parse = append_char(*parse, '\n');
-
 
     //apend jmp
-    //TODO
+    Ins *j = find_jmp_by_name(jmp);
+    *parse = append_string(*parse, j->bin_value);
+    *parse = append_char(*parse, '\n');
 
+    *buff = tmp;
+
+    free(line);
     free(dest);
+    free(comp);
+    free(jmp);
 }
 
 void parse_label(char **buff) {
@@ -169,24 +214,25 @@ char *parse(char *buff) {
     parse[0] = '\0';
 
     while(*buff != '\0') {
+        if(isspace(*buff)) {
+            buff++;
+            continue;
+        }
+        
         switch(*buff) {
-            case '/':
-                skip_comment(&buff);
-                break;
             case '@':
-                parse_variable(buff, &parse);
+                parse_variable(&buff, &parse);
                 break;
-            case '=':
-                parse_c_ins(buff, &parse);
-                break;
-            case '\n':
-                line_num++;
+            case '(':
+                skip_line(&buff);
                 break;
             default:
+                parse_c_ins(&buff, &parse);
                 break;
         }
         buff++;
     }
     printf("%s", parse);
+    free(parse); //TODO return parse and free at caller
     return "test";
 }
