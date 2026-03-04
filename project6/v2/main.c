@@ -61,9 +61,8 @@ void add_line(LineList *list, Line *new_line)
        list = list->next;
    }
 
-   LineList *new_list = malloc(sizeof(LineList));
+   LineList *new_list = create_line_list();
    new_list->line = new_line;
-   new_list->next = NULL;
 
    list->next = new_list;
 }
@@ -123,28 +122,25 @@ int main(void)
     {
         if(c == '/') is_comment = true;
         //TODO Implement and test multiline comments like so /* comment */!
-        if(is_comment)
+        if(is_comment && c == '\n') is_comment = false;
+        if(is_comment) continue;    
+        //{
+        //    if(c == '\n')
+        //    {
+        //        is_comment = false;
+        //    } else {
+        //        continue;
+        //    }
+        //}     
+        if(!isspace(c))
         {
-            if(c == '\n')
-            {
-                is_comment = false;
-            } else {
-                continue;
-            }
-        }     
-
-        if(!is_comment)
+            line = append_char(line, c);
+        }
+        if(strlen(line) > 0 && c == '\n')
         {
-            if(!isspace(c))
-            {
-                line = append_char(line, c);
-            }
-            if(strlen(line) > 0 && c == '\n')
-            {
-                add_line(list, create_line(line_num++, line));
-                free(line);
-                line = alloc_string();
-            }
+            add_line(list, create_line(line_num++, line));
+            free(line);
+            line = alloc_string();
         }
 
         //printf("%c is comment %d\n", c, is_comment);
