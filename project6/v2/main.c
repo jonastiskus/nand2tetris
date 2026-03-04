@@ -94,13 +94,13 @@ void add_line(LineList *list, Line *new_line)
 {
    if(!list) err(EXIT_FAILURE, "Head is null"); 
    
-   if(list->line == NULL)
+   if(!list->line)
    {
        list->line = new_line;
        return;
    }
 
-   while(list->next != NULL)
+   while(list->next)
    {
        list = list->next;
    }
@@ -170,13 +170,13 @@ void add_symbol(SymbolList *list, Symbol *symbol)
 {
    if(!list) err(EXIT_FAILURE, "Head is null"); 
    
-   if(list->symbol == NULL)
+   if(!list->symbol)
    {
        list->symbol = symbol;
        return;
    }
 
-   while(list->next != NULL)
+   while(list->next)
    {
        list = list->next;
    }
