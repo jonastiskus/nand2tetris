@@ -8,7 +8,7 @@
 
 typedef struct Instruction
 {
-    char *insturction;
+    char *instruction;
     char *binary;
 } Instruction;
 
@@ -254,6 +254,8 @@ void free_symbol_list(SymbolList *list)
 char *alloc_string(void)
 {
    char *string = malloc(sizeof(char)); 
+   if (!string) err(EXIT_FAILURE, "Error allocating string");
+
    string[0] = '\0';
 
    return string;
@@ -269,37 +271,30 @@ char *append_char(char *str, char c)
     return new_string;
 }
 
-char *parse(LineList *list)
+bool is_line_label(char *line)
 {
-    //TODO Implement
-    for(LineList *i = list; i; i = i->next)
-    {
-        printf("looping %d\n", i->line->number);
-    }
+    return (line[0] == '(') && (line[strlen(line) - 1] == ')');
 }
 
 void run_first_pass(LineList *line_list, SymbolList *symbol_list)
 {
     while(line_list)
     {
-        char *text = line_list->line->text;
+        char *copy = strdup(line_list->line->text);
         short number = line_list->line->number;
-        bool is_line_label = (text[0] == '(') && (text[strlen(text) - 1] == ')');
 
-        if(is_line_label) {
-            char *trimmed = ++text;
-            size_t length = strlen(trimmed);
-            trimmed[length - 1] = trimmed[length];
+        if(is_line_label(copy)) {
+            size_t length = strlen(copy);
+            copy[length - 1] = '\0';
+            char *trimmed = copy + 1;
 
             if(!find_symbol_by_name(symbol_list, trimmed))
             {
-                // TODO passing plain number might be wrong here! Need to address pointing
-                // Maybe count how many labels we found already and subtract.
                 add_symbol(symbol_list, create_symbol(trimmed, number));
             }
         }
-
         line_list = line_list->next;
+        free(copy);
     }
 }
 
@@ -321,8 +316,16 @@ void run_second_pass(LineList *line_list, SymbolList *symbol_list)
                 add_symbol(symbol_list, create_symbol(trimmed, value++));
             }
         }
-
         line_list = line_list->next;
+    }
+}
+
+char *parse(LineList *list)
+{
+    //TODO Implement
+    for(LineList *i = list; i; i = i->next)
+    {
+        printf("looping %d\n", i->line->number);
     }
 }
 
@@ -348,18 +351,22 @@ int main(void)
         }
         if(strlen(line) > 0 && c == '\n')
         {
-            add_line(line_list, create_line(line_num++, line));
+            add_line(line_list, create_line(line_num, line));
+            if(!is_line_label(line)) line_num++;
+
             free(line);
             line = alloc_string();
         }
     }
+    //print_line_list(line_list);
 
     SymbolList *symbol_list = create_symbol_list();
     initialize_default_symbols(symbol_list);
 
     run_first_pass(line_list, symbol_list);
     run_second_pass(line_list, symbol_list);
-    print_symbol_list(symbol_list);
+    //print_symbol_list(symbol_list);
+    print_line_list(line_list);
 
     free_line_list(line_list);
     free_symbol_list(symbol_list);
