@@ -1,4 +1,4 @@
 echo "building"
 
-gcc -g main.c instruction.c -o bin
+gcc -g main.c instruction.c line.c symbol.c -o bin
 
