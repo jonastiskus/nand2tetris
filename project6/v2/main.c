@@ -6,11 +6,7 @@
 #include <ctype.h>
 #include <err.h>
 
-typedef struct Instruction
-{
-    char *name;
-    char *binary;
-} Instruction;
+#include "instruction.h"
 
 typedef struct Line
 {
@@ -36,35 +32,6 @@ typedef struct SymbolList
     struct SymbolList *next;
 } SymbolList;
 
-Instruction comp_0_instructions[] =
-{
-    {"0", "101010"}, {"1", "111111"}, {"-1", "111010"},
-    {"D", "001100"}, {"A", "110000"}, {"!D", "001101"},
-    {"!A", "110001"}, {"-D", "001111"}, {"-A", "110011"},
-    {"D+1", "011111"}, {"A+1", "110111"}, {"D-1", "001110"},
-    {"A-1", "110010"}, {"D+A", "000010"}, {"D-A", "010011"},
-    {"A-D", "000111"}, {"D&A", "000000"}, {"D|A", "010101"}
-};
-
-Instruction comp_1_instructions[] =
-{
-    {"M", "110000"}, {"!M", "110001"}, {"-M", "110011"},
-    {"M+1", "110111"}, {"M-1", "110010"}, {"D+M", "000010"},
-    {"D-M", "010011"}, {"M-D", "000111"}, {"D&M", "000000"},
-    {"D|M", "010101"}
-};
-
-Instruction dest_instructions[] =
-{
-    {"null", "000"}, {"A", "100"}, {"M", "001"}, {"D", "010"},
-    {"MD", "011"}, {"AM", "101"}, {"AD", "110"}, {"AMD", "111"}
-};
-
-Instruction jump_instructions[] =
-{
-    {"null", "000"}, {"JGT", "001"}, {"JEQ", "010"}, {"JGE", "011"},
-    {"JLT", "100"}, {"JNE", "101"}, {"JLE", "110"}, {"JMP", "111"} 
-};
 
 //------------------- Line begin ---------------------
 
@@ -337,15 +304,6 @@ void number_to_bits(char *bits, short value)
     }
 }
 
-Instruction find_instruction_by_name(Instruction instructions[], size_t length, char *name)
-{
-    for(int i = 0; i < length; i++) {
-        if(strcmp(name, instructions[i].name) == 0) {
-            return instructions[i];
-        }
-    }
-}
-
 void *parse(char *buffer, LineList *line_list)
 {
     for(;line_list; line_list = line_list->next)
@@ -360,6 +318,7 @@ void *parse(char *buffer, LineList *line_list)
             bool is_symbol = is_line_A_instruction(line) && !isdigit(line[1]);
             if(is_symbol)
             {
+
                 // TODO find symbol from symbol list and get its value into binary
             } else 
             {
@@ -385,13 +344,13 @@ void *parse(char *buffer, LineList *line_list)
 
                 Instruction dest_instruction = find_instruction_by_name(
                         dest_instructions,
-                        sizeof(dest_instructions),
+                        DEST_INSTRUCTIONS_SIZE,
                         destination);
                 
                 bits[10] = dest_instruction.binary[0];
                 bits[11] = dest_instruction.binary[1];
                 bits[12] = dest_instruction.binary[2];
-                printf("bits: %s %s was added\n", bits, dest_instruction.binary);
+                printf("bits: %s %s %s was added\n", line, bits, dest_instruction.binary);
             }
         }
         
@@ -438,11 +397,12 @@ int main(void)
     char *parse_buffer = alloc_string(); 
     parse(parse_buffer, line_list);
 
-    puts("Testing");
+    fputs("Testing\n", stdout);
 
     free_line_list(line_list);
     free_symbol_list(symbol_list);
     free(parse_buffer);
+    free(line);
     return 0;
 }
 
