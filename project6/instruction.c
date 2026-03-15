@@ -1,6 +1,8 @@
 #include <string.h>
 #include "assembler.h"
 
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof *x)
+
 Instruction comp_0_instructions[] =
 {
     {"0", "101010"}, {"1", "111111"}, {"-1", "111010"},
@@ -31,10 +33,10 @@ Instruction jump_instructions[] =
     {"JLT", "100"}, {"JNE", "101"}, {"JLE", "110"}, {"JMP", "111"} 
 };
 
-const size_t COMP_0_INSTRUCTIONS_SIZE = sizeof *comp_0_instructions;
-const size_t COMP_1_INSTRUCTIONS_SIZE = sizeof *comp_1_instructions;
-const size_t DEST_INSTRUCTIONS_SIZE = sizeof *dest_instructions;
-const size_t JUMP_INSTRUCTIONS_SIZE = sizeof *jump_instructions;
+const size_t COMP_0_INSTRUCTIONS_SIZE = ARRAY_SIZE(comp_0_instructions);
+const size_t COMP_1_INSTRUCTIONS_SIZE = ARRAY_SIZE(comp_1_instructions);
+const size_t DEST_INSTRUCTIONS_SIZE = ARRAY_SIZE(dest_instructions);
+const size_t JUMP_INSTRUCTIONS_SIZE = ARRAY_SIZE(jump_instructions);
 
 Instruction *find_instruction_by_name(Instruction instructions[], size_t length, char *name)
 {
