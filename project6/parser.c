@@ -142,7 +142,7 @@ char *parse(LineList *line_list, SymbolList *symbol_list)
                 jump_substr[i] = '\0';
                 jump = jump_substr;
             }
-
+            // TODO Refactor to assembly function
             Instruction *dest_instruction = find_instruction_by_name(
                     dest_instructions,
                     DEST_INSTRUCTIONS_SIZE,
