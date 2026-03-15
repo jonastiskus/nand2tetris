@@ -43,6 +43,9 @@ extern void print_line_list(LineList *list);
 extern void free_line(Line *line);
 extern void free_line_list(LineList *list);
 
+/*-------------------Reader------------------- */
+extern void reader_read_into_lines(LineList *line_list);
+
 /*-------------------Symbols------------------- */
 typedef struct Symbol
 {
