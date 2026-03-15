@@ -66,17 +66,17 @@ extern void free_symbol(Symbol *symbol);
 extern void free_symbol_list(SymbolList *list);
 
 /*-------------------Parser------------------- */
-bool is_line_label(char *line);
-bool is_line_A_instruction(char *line);
-bool is_line_C_instruction(char *line);
-void run_first_pass(LineList *line_list, SymbolList *symbol_list);
-void run_second_pass(LineList *line_list, SymbolList *symbol_list);
-char *parse(LineList *line_list, SymbolList *symbol_list);
+extern bool is_line_label(char *line);
+extern bool is_line_A_instruction(char *line);
+extern bool is_line_C_instruction(char *line);
+extern void run_first_pass(LineList *line_list, SymbolList *symbol_list);
+extern void run_second_pass(LineList *line_list, SymbolList *symbol_list);
+extern char *parse(LineList *line_list, SymbolList *symbol_list);
 
 /*-------------------Utils------------------- */
-char *alloc_string(void);
-char *append_char(char *str, char c);
-char *append_string(char *location, char *str);
-void number_to_bits(char *bits, short value);
+extern char *alloc_string(void);
+extern char *append_char(char *str, char c);
+extern char *append_string(char *location, char *str);
+extern void number_to_bits(char *bits, short value);
 
 #endif
