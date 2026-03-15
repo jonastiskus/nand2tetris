@@ -26,7 +26,7 @@ LineList *create_line_list(void)
     return line_list;
 }
 
-extern void add_line(LineList *list, Line *new_line)
+void add_line(LineList *list, Line *new_line)
 {
    if(!list) err(EXIT_FAILURE, "Head is null"); 
    
