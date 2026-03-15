@@ -2,6 +2,12 @@
 
 Program in C to parse hack assembly language into hack CPU binary instructions.
 
+## Building
+To build a binary just run:
+```bash
+./build.sh
+```
+
 ## Usage
 
 ```bash
