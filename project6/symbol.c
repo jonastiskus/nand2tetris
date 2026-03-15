@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "symbol.h"
+#include "assembler.h"
 
 Symbol *create_symbol(char *name, short value)
 {

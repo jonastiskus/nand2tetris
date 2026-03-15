@@ -1,5 +1,5 @@
 #include <string.h>
-#include "instruction.h"
+#include "assembler.h"
 
 Instruction comp_0_instructions[] =
 {
