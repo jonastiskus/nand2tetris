@@ -53,7 +53,7 @@ void print_line_list(LineList *list)
     while(iterable)
     {
         Line *line = iterable->line;
-        printf("Line: %d, text: %s\n", line->number, line->text);
+        fprintf(stderr, "Line: %d, text: %s\n", line->number, line->text);
         iterable = iterable->next;
     }
 }

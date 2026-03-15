@@ -19,7 +19,7 @@ extern const size_t COMP_1_INSTRUCTIONS_SIZE;
 extern const size_t DEST_INSTRUCTIONS_SIZE;
 extern const size_t JUMP_INSTRUCTIONS_SIZE;
 
-extern Instruction find_instruction_by_name(Instruction instructions[], size_t length, char *name);
+extern Instruction *find_instruction_by_name(Instruction instructions[], size_t length, char *name);
 
 #endif
 

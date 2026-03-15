@@ -53,6 +53,11 @@ bool is_line_A_instruction(char *line)
     return strlen(line) >= 2 && line[0] == '@';
 }
 
+bool is_line_C_instruction(char *line)
+{
+    return strlen(line) >= 2 && (strchr(line, '=') || strchr(line, ';'));
+}
+
 void run_first_pass(LineList *line_list, SymbolList *symbol_list)
 {
     while(line_list)
@@ -99,16 +104,20 @@ void run_second_pass(LineList *line_list, SymbolList *symbol_list)
 
 void number_to_bits(char *bits, short value)
 {
+    const short ASCII_OFFSET = '0';
     int i = strlen(bits) - 1; // -1 because MSB defines instruction type
     while(i) {
-        bits[i] = (value % 2) + '0';
+        bits[i] = (value % 2) + ASCII_OFFSET;
         value = value / 2;
         i--;
     }
 }
 
-void parse(char *buffer, LineList *line_list)
+char *parse(LineList *line_list, SymbolList *symbol_list)
 {
+    const short ASCII_OFFSET = '0';
+    char *buffer = alloc_string();
+
     for(;line_list; line_list = line_list->next)
     {
         char *line = line_list->line->text;
@@ -118,46 +127,120 @@ void parse(char *buffer, LineList *line_list)
 
         if(is_line_A_instruction(line))
         {
+            char bits[17] = "0000000000000000";
             bool is_symbol = is_line_A_instruction(line) && !isdigit(line[1]);
+
             if(is_symbol)
             {
-                            
-                // TODO find symbol from symbol list and get its value into binary
-            } else 
-            {
-                short value = atoi(++line);
-                char bits[17] = "0000000000000000";
-                number_to_bits(bits, value);
-                append_string(buffer, bits);
-                append_char(buffer, '\n');
-            }
-        } else
+                Symbol *symbol = find_symbol_by_name(symbol_list, ++line);
+                if(symbol)
+                {
+                    number_to_bits(bits, symbol->value);
+                }
+                else err(EXIT_FAILURE, "A instruction symbol not found");
+            } else number_to_bits(bits, (short) atoi(++line));
+
+            buffer = append_string(buffer, bits);
+            buffer = append_char(buffer, '\n');
+        } else if (is_line_C_instruction(line))
         {
-            char bits[17] = "1000000000000000";
-            char *destination = strchr(line, '=');
+            char bits[17] = "1110000000000000";
+            char *has_destination = strchr(line, '=');
+            char *has_jump = strchr(line, ';');
+            char *iterator = line;
 
-            if(destination)
+            if(has_destination)
             {
-                size_t length = destination - line;
-                char substring[20];
-
-                strncpy(substring, line, length);
-                substring[length] = '\0';
-                destination = substring;
-
-                Instruction dest_instruction = find_instruction_by_name(
-                        dest_instructions,
-                        DEST_INSTRUCTIONS_SIZE,
-                        destination);
-                
-                bits[10] = dest_instruction.binary[0];
-                bits[11] = dest_instruction.binary[1];
-                bits[12] = dest_instruction.binary[2];
-                append_string(buffer, bits);
-                append_char(buffer, '\n');
+                char destination_substr[20];
+                int i = 0;
+                for(; *iterator != '='; i++)
+                {
+                    destination_substr[i] = *iterator;
+                    iterator++;
+                }
+                destination_substr[i] = '\0';
+                destination = destination_substr;
+                iterator++; // Skip '=' for computation
             }
+
+            char computation_substr[20];
+            int i = 0;
+            for(; *iterator != '\0' && *iterator != ';'; i++)
+            {
+                computation_substr[i] = *iterator;
+                iterator++;
+            }
+            computation_substr[i] = '\0';
+            computation = computation_substr;
+         
+
+            if(has_jump)
+            {
+                iterator++; //Skip ';'
+                char jump_substr[20];
+                int i = 0;
+                while(*iterator != '\0') 
+                {
+                    jump_substr[i] = *iterator;
+                    iterator++;
+                    i++;
+                }
+                jump_substr[i] = '\0';
+                jump = jump_substr;
+            }
+
+            Instruction *dest_instruction = find_instruction_by_name(
+                    dest_instructions,
+                    DEST_INSTRUCTIONS_SIZE,
+                    destination);
+
+            if(!dest_instruction) err(EXIT_FAILURE, "Destination instruction was not found");
+
+            bool second_comp = false;
+            Instruction *comp_instruction = find_instruction_by_name(
+                    comp_0_instructions,
+                    COMP_0_INSTRUCTIONS_SIZE,
+                    computation);
+
+            if(!comp_instruction)
+            {
+                second_comp = true;
+                comp_instruction = find_instruction_by_name(
+                        comp_1_instructions,
+                        COMP_1_INSTRUCTIONS_SIZE,
+                        computation);
+
+                if(!comp_instruction) err(EXIT_FAILURE, "Computation instruction was not found");
+            } 
+
+            Instruction *jump_instruction = find_instruction_by_name(
+                    jump_instructions,
+                    JUMP_INSTRUCTIONS_SIZE,
+                    jump);
+
+            bits[3] = second_comp + ASCII_OFFSET;
+            bits[4] = comp_instruction->binary[0];
+            bits[5] = comp_instruction->binary[1];
+            bits[6] = comp_instruction->binary[2];
+            bits[7] = comp_instruction->binary[3];
+            bits[8] = comp_instruction->binary[4];
+            bits[9] = comp_instruction->binary[5];
+            bits[10] = dest_instruction->binary[0];
+            bits[11] = dest_instruction->binary[1];
+            bits[12] = dest_instruction->binary[2];
+            bits[13] = jump_instruction->binary[0];
+            bits[14] = jump_instruction->binary[1];
+            bits[15] = jump_instruction->binary[2];
+
+            buffer = append_string(buffer, bits);
+            buffer = append_char(buffer, '\n');
+        } else 
+        {
+            fprintf(stderr, "Unknown instruction %s. Skipping\n", line);
+            continue;
         }
     }
+    return buffer;
 }
 
 int main(void)
@@ -190,15 +273,19 @@ int main(void)
         }
     }
 
+    if(strlen(line) > 0)
+    {
+        add_line(line_list, create_line(line_num, line));
+        if(!is_line_label(line)) line_num++;
+    }
+
     SymbolList *symbol_list = create_symbol_list();
     initialize_default_symbols(symbol_list);
 
     run_first_pass(line_list, symbol_list);
     run_second_pass(line_list, symbol_list);
 
-    char *parse_buffer = alloc_string(); 
-    parse(parse_buffer, line_list);
-
+    char *parse_buffer = parse(line_list, symbol_list);
     fputs(parse_buffer, stdout);
 
     free_line_list(line_list);

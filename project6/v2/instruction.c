@@ -36,12 +36,14 @@ const size_t COMP_1_INSTRUCTIONS_SIZE = sizeof *comp_1_instructions;
 const size_t DEST_INSTRUCTIONS_SIZE = sizeof *dest_instructions;
 const size_t JUMP_INSTRUCTIONS_SIZE = sizeof *jump_instructions;
 
-Instruction find_instruction_by_name(Instruction instructions[], size_t length, char *name)
+Instruction *find_instruction_by_name(Instruction instructions[], size_t length, char *name)
 {
     for(int i = 0; i < length; i++) {
         if(strcmp(name, instructions[i].name) == 0) {
-            return instructions[i];
+            return &instructions[i];
         }
     }
+
+    return NULL;
 }
 

@@ -87,7 +87,7 @@ void print_symbol_list(SymbolList *list)
     while(iterable)
     {
         Symbol *symbol = iterable->symbol;
-        printf("name: %s, value: %d\n", symbol->name, symbol->value);
+        fprintf(stderr, "name: %s, value: %d\n", symbol->name, symbol->value);
         iterable = iterable->next;
     }
 }
